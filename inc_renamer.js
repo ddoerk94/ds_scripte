@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Inc-Renamer
 // @description      Die Staemme: Umbenennen von Angriffen
-// @author         SlowTarget, angepasst von RokKeT und Harpstennah
+// @author         SlowTarget, angepasst von RokKeT, Harpstennah und Get Drunk
 // @icon         http://help.die-staemme.de/images/4/46/Att.png
 // @include         https://de*.die-staemme.de/game.php*&screen=info_command*
 // @exclude         https://*/game.php*type=own*&screen=info_command
@@ -16,7 +16,7 @@ win.theFormatII = '{unit} - {origin} {player} s:{sent}';
 // win.insertSymbol=".";
 
 var win = typeof unsafeWindow != 'undefined' ? unsafeWindow : window;
-win.ScriptAPI.register('51-Inc-Renamer', true, 'Harpstennah', 'support-nur-im-forum@arcor.de');
+win.ScriptAPI.register('51-Inc-Renamer', true, 'Get Drunk', 'support-nur-im-forum@arcor.de');
 
 function labelAttack() {
   var $ = win.$;
@@ -29,12 +29,15 @@ function labelAttack() {
   function gid(id) {
     return document.getElementById(id);
   }
+
   function myGetCoords(theString) {
     return /(.*?)\s\(((\d+)\|(\d+))\)\sK(\d+)/i.exec(theString);
   }
+
   function fnInt(txtInt) {
     return parseInt(txtInt, 10);
   }
+
   function fnDate(txtDate) {
     var arrMs = txtDate.match(/:(\d{3})$/i);
     if (arrMs) txtDate = txtDate.replace(/:(\d{3})$/i, '');
@@ -48,11 +51,12 @@ function labelAttack() {
     if (arrMs) dtNew.setMilliseconds(arrMs[1]);
     return dtNew;
   }
+
   function fnDateFormat(dtDate) {
     var intMs = dtDate.getMilliseconds();
-    var zeigeMs = oStorage.irSettings.mitMS
-      ? '.' + (intMs > 99 ? intMs : '0' + myZeroPad(intMs))
-      : '';
+    var zeigeMs = oStorage.irSettings.mitMS ?
+      '.' + (intMs > 99 ? intMs : '0' + myZeroPad(intMs)) :
+      '';
     return (
       myZeroPad(dtDate.getHours()) +
       ':' +
@@ -66,6 +70,7 @@ function labelAttack() {
       myZeroPad(dtDate.getMonth() + 1)
     );
   }
+
   function myTime(theInt) {
     return (
       myZeroPad(theInt / 3600) +
@@ -75,20 +80,17 @@ function labelAttack() {
       myZeroPad(theInt % 60)
     );
   }
+
   function myZeroPad(theString) {
     var theInt = parseInt(theString, 10);
     return theInt > 9 ? theInt : '0' + theInt;
   }
-  function mySetInner(theObj, theString) {
-    theObj.innerHTML = theString;
-    return theObj;
-  }
 
-  if (typeof theFormat == 'undefined')
-    var theFormat = '{unit} ({coords}) {origin} {player} {incid} {sent}';
-  if (typeof theFormatII == 'undefined') var theFormatII = theFormat;
-  if (typeof arrUnitNames == 'undefined')
-    var arrUnitNames = [
+  if (typeof win.theFormat == 'undefined')
+    win.theFormat = '{unit} ({coords}) {origin} {player} {incid} {sent}';
+  if (typeof win.theFormatII == 'undefined') win.theFormatII = win.theFormat;
+  if (typeof win.arrUnitNames == 'undefined')
+    win.arrUnitNames = [
       'Sp\u00e4h',
       'LKAV',
       'SKAV',
@@ -99,33 +101,86 @@ function labelAttack() {
       '**AG**',
       'UNBK',
     ];
-  if (typeof arrKeys == 'undefined') var arrKeys = [-1, -1, -1, -1, -1, -1, -1, -1, -1];
+  if (typeof win.arrKeys == 'undefined') win.arrKeys = [-1, -1, -1, -1, -1, -1, -1, -1, -1];
   var oTexts = [
-    /* 0 */ {val: '', name: '{unit}', info: 'Truppentyp des Incs'},
-    /* 1 */ {val: '', name: '{coords}', info: "'xxx|yyy' Koordinaten von angreifenden Dorf"},
-    /* 2 */ {val: '', name: '{player}', info: 'Spieler der angreift'},
-    /* 3 */ {val: '', name: '{duration}', info: 'hhh:mm:ss Laufzeit des Incs'},
-    /* 4 */ {val: '', name: '{distance}', info: 'Entfernung'},
-    /* 5 */ {
+    /* 0 */
+    {
+      val: '',
+      name: '{unit}',
+      info: 'Truppentyp des Incs'
+    },
+    /* 1 */
+    {
+      val: '',
+      name: '{coords}',
+      info: "'xxx|yyy' Koordinaten von angreifenden Dorf"
+    },
+    /* 2 */
+    {
+      val: '',
+      name: '{player}',
+      info: 'Spieler der angreift'
+    },
+    /* 3 */
+    {
+      val: '',
+      name: '{duration}',
+      info: 'hhh:mm:ss Laufzeit des Incs'
+    },
+    /* 4 */
+    {
+      val: '',
+      name: '{distance}',
+      info: 'Entfernung'
+    },
+    /* 5 */
+    {
       val: '',
       name: '{return}',
       info: 'Datum, Zeit wann die Truppen wieder im Heimatdorf sind',
     },
-    /* 6 */ {val: '', name: '{incid}', info: 'ID des Angriffs'},
-    /* 7 */ {
+    /* 6 */
+    {
+      val: '',
+      name: '{incid}',
+      info: 'ID des Angriffs'
+    },
+    /* 7 */
+    {
       val: '',
       name: '{sent}',
       info: 'Abschickzeit des Incs(AbhÃ¤ngig vom gewÃ¤hlten Truppentyp)',
     },
-    /* 8 */ {val: '', name: '{arrival}', info: 'Datum & Zeit wann der Inc ankommt'},
-    /* 9 */ {
+    /* 8 */
+    {
+      val: '',
+      name: '{arrival}',
+      info: 'Datum & Zeit wann der Inc ankommt'
+    },
+    /* 9 */
+    {
       val: '',
       name: '{origin}',
       info: "'name (xxx|yyy) Knn' Name, Koordinaten und Kontinent des angreifenden Dorf",
     },
-    /* 10 */ {val: '', name: '{destination}', info: "'name (xxx|yyy) Knn' Kontinent des Zieldorf"},
-    /* 11 */ {val: '', name: '{destinationxy}', info: "'xxx|yyy' Koordinaten vom Zieldorf"},
-    /* 12 */ {val: '', name: '{date}', info: 'Aktuelle Serverzeit und Datum'},
+    /* 10 */
+    {
+      val: '',
+      name: '{destination}',
+      info: "'name (xxx|yyy) Knn' Kontinent des Zieldorf"
+    },
+    /* 11 */
+    {
+      val: '',
+      name: '{destinationxy}',
+      info: "'xxx|yyy' Koordinaten vom Zieldorf"
+    },
+    /* 12 */
+    {
+      val: '',
+      name: '{date}',
+      info: 'Aktuelle Serverzeit und Datum'
+    },
   ];
   if (typeof irTexts != 'undefined') $.extend(oTexts, irTexts);
   var unitReplace = {
@@ -140,12 +195,17 @@ function labelAttack() {
 
   var nameStorage = 'ds_Inc_Renamer_' + world_id;
   if (oGD.player.sitter != 0) nameStorage = nameStorage + '_UV';
+
   function fSpeichereEinstellungen(storage) {
     win.localStorage.setItem(nameStorage, JSON.stringify(storage));
   }
+
   function fLadeEinstellungen() {
-    var sa = eval('(' + win.localStorage.getItem(nameStorage) + ')');
-    if (sa == null) sa = {config: {}, irSettings: {}};
+    var sa = JSON.parse(win.localStorage.getItem(nameStorage));
+    if (sa == null) sa = {
+      config: {},
+      irSettings: {}
+    };
     if (sa.config.PlayerStart == null || sa.config.PlayerStart != oGD.player.date_started) {
       /* Server-Konfiguration ermitteln */
       function fnGetConfig() {
@@ -173,16 +233,14 @@ function labelAttack() {
           .text(),
       };
     }
-    if (sa.irSettings.Form == null) {
-      sa.irSettings = {
-        Form: [theFormat, theFormatII],
-        Radio_Form: 0,
-        UnitNames: arrUnitNames,
-        IconTrenner: typeof insertSymbol == 'undefined' ? '' : insertSymbol,
-        mitMS: parseInt(sa.config.Millisec),
-        DS_Links: true,
-      };
-    }
+    sa.irSettings = {
+      Form: [win.theFormat, win.theFormatII],
+      Radio_Form: 0,
+      UnitNames: arrUnitNames,
+      IconTrenner: typeof win.insertSymbol == 'undefined' ? '' : win.insertSymbol,
+      mitMS: parseInt(sa.config.Millisec),
+      DS_Links: true,
+    };
     fSpeichereEinstellungen(sa);
     return sa;
   }
@@ -229,9 +287,9 @@ function labelAttack() {
   oTexts[11].val = zVerteiDorf[2]; //destinationxy
   /* Ankunft */
   oTexts[8].val =
-    typeof $Ankunft[0].getElementsByTagName('td')[1].v == 'undefined'
-      ? $Ankunft[0].getElementsByTagName('td')[1].textContent
-      : $Ankunft[0].getElementsByTagName('td')[1].innerText; // Mar 27, 2014  10:42:03
+    typeof $Ankunft[0].getElementsByTagName('td')[1].v == 'undefined' ?
+    $Ankunft[0].getElementsByTagName('td')[1].textContent :
+    $Ankunft[0].getElementsByTagName('td')[1].innerText; // Mar 27, 2014  10:42:03
   var dtArrival = fnDate(oTexts[8].val);
   if (dtArrival == 'Invalid Date') return;
   oTexts[8].val = fnDateFormat(dtArrival); // 10:42:03.000 27/03
@@ -269,10 +327,10 @@ function labelAttack() {
   /* Links für VP und Inno-Umbenennung ggf. ausblenden */
   if (!oStorage.irSettings.DS_Links)
     $($irTable_0)
-      .find('a:last')
-      .parents('tr')
-      .eq(0)
-      .hide();
+    .find('a:last')
+    .parents('tr')
+    .eq(0)
+    .hide();
 
   /* Zeilen für die Einheiten erzeugen */
   for (var theIndex in oStorage.irSettings.UnitNames) {
@@ -281,8 +339,8 @@ function labelAttack() {
 
     var secsDuration = Math.round(
       ([9, 10, 11, 18, 22, 30, 30, 35, 0][theIndex] * 60 * dblDistance) /
-        oStorage.config.WorldSpeed /
-        oStorage.config.UnitSpeed
+      oStorage.config.WorldSpeed /
+      oStorage.config.UnitSpeed
     );
     var msecsDuration = secsDuration * 1000;
     var secsDiff = (msecsDuration - msecsArrivalIn) / 1000;
@@ -322,7 +380,7 @@ function labelAttack() {
       button.value = 'OK';
       // Hotkeys vorbereiten
       if (arrKeys[theIndex] !== -1) button.id = 'unit_button_' + arrKeys[theIndex];
-      button.onclick = function() {
+      button.onclick = function () {
         // Ãœbergabe der Werte
         var label = $('#label_input_' + this.name).val();
         var $container = $('#quickedit-rename.quickedit');
@@ -349,9 +407,10 @@ function labelAttack() {
         .append(input);
     }
   } //z.B.  win.arrKeys=[49,50,51,52,53,54,55,56,57];
-  /* Hotkeys */ win.addEventListener(
+  /* Hotkeys */
+  win.addEventListener(
     'keydown',
-    function(event) {
+    function (event) {
       for (var i = 0; i != arrKeys.length; ++i) {
         if (event.which == arrKeys[i] && gid('label_input_' + i)) {
           gid('unit_button_' + event.which).click();
@@ -440,7 +499,7 @@ function labelAttack() {
     inButton.type = 'button';
     inButton.className = 'btn';
     inButton.value = 'Speichern';
-    inButton.onclick = function() {
+    inButton.onclick = function () {
       /* Reset */
       if ($('#irInUnitNames').val() == 'reset' + world_id) {
         win.localStorage.removeItem(nameStorage);
@@ -452,8 +511,8 @@ function labelAttack() {
       var strFehler = '';
       if (
         $('#irInUnitNames')
-          .val()
-          .split(',').length == 9
+        .val()
+        .split(',').length == 9
       ) {
         oStorage.irSettings.UnitNames = $('#irInUnitNames')
           .val()
@@ -500,11 +559,11 @@ function labelAttack() {
         a.title = oTexts[i].info;
         a.innerHTML = oTexts[i].name;
         $(td).append(a);
-        $(td).click(function() {
+        $(td).click(function () {
           insertPh(
             $(this)
-              .text()
-              .replace(/\&amp;/g, '&'),
+            .text()
+            .replace(/\&amp;/g, '&'),
             gid(irInputAktiv)
           );
         });
@@ -519,6 +578,7 @@ function labelAttack() {
         .append(tr2);
       return tab;
     }
+
     function insertPh(ph, input) {
       var start = input.selectionStart;
       var end = input.selectionEnd;
@@ -558,7 +618,7 @@ function labelAttack() {
   };
   var clickEinst = $('#BuSet a:first');
   $(clickEinst).attr('title', clicktexts.v1);
-  $(clickEinst).bind('click', function(ev) {
+  $(clickEinst).bind('click', function (ev) {
     switch ($('#BuSet a:first').attr('title')) {
       case clicktexts.v1: // Schnellauswahl
         $('#irSetZ_01').show();
@@ -567,7 +627,7 @@ function labelAttack() {
           .find("input[name='Form']")
           .eq(oStorage.irSettings.Radio_Form)
           .attr('checked', true);
-        $('#irFenster_01').click(function() {
+        $('#irFenster_01').click(function () {
           oStorage.irSettings.Radio_Form = $("input[name='Form']:checked").val();
           fSpeichereEinstellungen(oStorage);
           location.reload();
